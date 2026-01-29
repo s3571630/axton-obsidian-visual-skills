@@ -7,6 +7,8 @@
 
 让 Claude Code 在 Obsidian 里生成 Canvas / Excalidraw / Mermaid 的可视化三件套。
 
+> **Next Step:** 想把 Skill 从 demo 变资产？看 [Agent Skills 资源库](https://www.axtonliu.ai/agent-skills)（含讲义/PDF/诊断）
+
 ## 效果展示
 
 <table>
