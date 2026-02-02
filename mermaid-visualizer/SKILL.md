@@ -268,6 +268,7 @@ Before outputting, verify:
 - [ ] Style declarations present
 - [ ] No ambiguous node references
 - [ ] Compatible with Obsidian/GitHub renderers
+- [ ] **No Emoji** in any node text - use text labels or color coding instead
 
 ## References
 

@@ -156,6 +156,10 @@ Use for brand consistency or specific themes. Always use uppercase format: `"#4A
    - No extra wrapping objects
    - No comments in output
 
+6. **No Emoji:**
+   - Do not use any Emoji symbols in node text
+   - Use color coding or text labels for visual distinction instead
+
 ## Examples
 
 ### Simple MindMap Request
