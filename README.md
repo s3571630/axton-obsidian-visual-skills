@@ -50,7 +50,13 @@ Skills are prompt-based extensions for [Claude Code](https://docs.anthropic.com/
 
 ### 1. Excalidraw Diagram Generator
 
-Generate hand-drawn style diagrams directly in Obsidian using the Excalidraw plugin. Creates `.md` files with embedded Excalidraw JSON that opens natively in Obsidian.
+Generate hand-drawn style diagrams with three output modes:
+
+| Mode | Output | Use Case |
+|------|--------|----------|
+| **Obsidian** (default) | `.md` | Open directly in Obsidian |
+| **Standard** | `.excalidraw` | Open/edit/share on excalidraw.com |
+| **Animated** | `.excalidraw` | Generate animations with [excalidraw-animate](https://dai-shi.github.io/excalidraw-animate/) |
 
 **Supported Diagram Types:**
 
@@ -66,12 +72,15 @@ Generate hand-drawn style diagrams directly in Obsidian using the Excalidraw plu
 | **Freeform** | Scattered ideas, initial exploration, free-form notes |
 
 **Key Features:**
-- Auto-saves `.md` files ready for Obsidian Excalidraw plugin
+- Three output modes for different use cases
 - Hand-drawn aesthetic with Excalifont (fontFamily: 5)
 - Full Chinese text support with proper character handling
-- Consistent color palette and styling guidelines
+- Animation support with customizable element order
 
-**Trigger words:** `Excalidraw`, `diagram`, `flowchart`, `mind map`, `画图`, `流程图`, `思维导图`, `可视化`
+**Trigger words:**
+- Obsidian: `Excalidraw`, `diagram`, `flowchart`, `mind map`, `画图`, `流程图`
+- Standard: `标准Excalidraw`, `standard excalidraw`
+- Animated: `Excalidraw动画`, `动画图`, `animate`
 
 ### 2. Mermaid Visualizer
 
