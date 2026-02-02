@@ -1,24 +1,37 @@
 ---
 name: excalidraw-diagram
-description: Generate Excalidraw diagrams from text content for Obsidian. Use when user asks to create diagrams, flowcharts, mind maps, or visual representations in Excalidraw format. Triggers on "Excalidraw", "画图", "流程图", "思维导图", "可视化", "diagram".
+description: Generate Excalidraw diagrams from text content. Supports three output modes - Obsidian (.md), Standard (.excalidraw), and Animated (.excalidraw with animation order). Triggers on "Excalidraw", "画图", "流程图", "思维导图", "可视化", "diagram", "标准Excalidraw", "standard excalidraw", "Excalidraw动画", "动画图", "animate".
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Excalidraw Diagram Generator
 
-Create Excalidraw diagrams from text content, outputting Obsidian-ready `.md` files.
+Create Excalidraw diagrams from text content with multiple output formats.
+
+## Output Modes
+
+根据用户的触发词选择输出模式：
+
+| 触发词 | 输出模式 | 文件格式 | 用途 |
+|--------|----------|----------|------|
+| `Excalidraw`、`画图`、`流程图`、`思维导图` | **Obsidian**（默认） | `.md` | 在 Obsidian 中直接打开 |
+| `标准Excalidraw`、`standard excalidraw` | **Standard** | `.excalidraw` | 在 excalidraw.com 打开/编辑/分享 |
+| `Excalidraw动画`、`动画图`、`animate` | **Animated** | `.excalidraw` | 拖到 excalidraw-animate 生成动画 |
 
 ## Workflow
 
-1. Analyze content - identify concepts, relationships, hierarchy
-2. Choose diagram type (see below)
-3. Generate Excalidraw JSON
-4. Generate Obsidian-ready `.md` file with Excalidraw frontmatter
-5. **Automatically save to current working directory**
-6. Notify user with file path and confirm save successful
+1. **Detect output mode** from trigger words (see Output Modes table above)
+2. Analyze content - identify concepts, relationships, hierarchy
+3. Choose diagram type (see Diagram Types below)
+4. Generate Excalidraw JSON (add animation order if Animated mode)
+5. Output in correct format based on mode
+6. **Automatically save to current working directory**
+7. Notify user with file path and usage instructions
 
-## Output Format
+## Output Formats
+
+### Mode 1: Obsidian Format (Default)
 
 **严格按照以下结构输出，不得有任何修改：**
 
@@ -45,6 +58,63 @@ tags: [excalidraw]
 - 警告信息必须完整
 - JSON 必须被 `%%` 标记包围
 - 不能使用 `excalidraw-plugin: parsed` 以外的其他 frontmatter 设置
+- **文件扩展名**：`.md`
+
+### Mode 2: Standard Excalidraw Format
+
+直接输出纯 JSON 文件，可在 excalidraw.com 打开：
+
+```json
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [...],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}
+```
+
+**关键要点：**
+- `source` 使用 `https://excalidraw.com`（不是 Obsidian 插件）
+- 纯 JSON，无 Markdown 包装
+- **文件扩展名**：`.excalidraw`
+
+### Mode 3: Animated Excalidraw Format
+
+与 Standard 格式相同，但每个元素添加 `customData.animate` 字段控制动画顺序：
+
+```json
+{
+  "id": "element-1",
+  "type": "rectangle",
+  "customData": {
+    "animate": {
+      "order": 1,
+      "duration": 500
+    }
+  },
+  ...其他标准字段
+}
+```
+
+**动画顺序规则：**
+- `order`: 动画播放顺序（1, 2, 3...），数字越小越先出现
+- `duration`: 该元素的绘制时长（毫秒），默认 500
+- 相同 `order` 的元素同时出现
+- 建议顺序：标题 → 主要框架 → 连接线 → 细节文字
+
+**使用方法：**
+1. 生成 `.excalidraw` 文件
+2. 拖到 https://dai-shi.github.io/excalidraw-animate/
+3. 点击 Animate 预览，然后导出 SVG 或 WebM
+
+**文件扩展名**：`.excalidraw`
+
+---
 
 ## Diagram Types & Selection Guide
 
@@ -91,16 +161,26 @@ tags: [excalidraw]
 
 ## JSON Structure
 
+**Obsidian 模式：**
 ```json
 {
   "type": "excalidraw",
   "version": 2,
   "source": "https://github.com/zsviczian/obsidian-excalidraw-plugin",
   "elements": [...],
-  "appState": {
-    "gridSize": null,
-    "viewBackgroundColor": "#ffffff"
-  },
+  "appState": { "gridSize": null, "viewBackgroundColor": "#ffffff" },
+  "files": {}
+}
+```
+
+**Standard / Animated 模式：**
+```json
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [...],
+  "appState": { "gridSize": null, "viewBackgroundColor": "#ffffff" },
   "files": {}
 }
 ```
@@ -151,6 +231,21 @@ Text elements add:
   "originalText": "显示文本",
   "autoResize": true,
   "lineHeight": 1.25
+}
+```
+
+**Animated 模式额外添加** `customData` 字段：
+```json
+{
+  "id": "title-1",
+  "type": "text",
+  "customData": {
+    "animate": {
+      "order": 1,
+      "duration": 500
+    }
+  },
+  ...其他字段
 }
 ```
 
@@ -242,8 +337,15 @@ See [references/excalidraw-schema.md](references/excalidraw-schema.md) for all e
 - 分析内容的核心诉求，选择最合适的可视化形式
 
 #### 2. 生成有意义的文件名
-- 格式：`[主题].[类型].md`
-- 例如：`内容创作流程.flowchart.md`、`Axton商业模式.relationship.md`
+
+根据输出模式选择文件扩展名：
+
+| 模式 | 文件名格式 | 示例 |
+|------|-----------|------|
+| Obsidian | `[主题].[类型].md` | `商业模式.relationship.md` |
+| Standard | `[主题].[类型].excalidraw` | `商业模式.relationship.excalidraw` |
+| Animated | `[主题].[类型].animate.excalidraw` | `商业模式.relationship.animate.excalidraw` |
+
 - 优先使用中文以提高清晰度
 
 #### 3. 使用 Write 工具自动保存文件
@@ -289,21 +391,43 @@ tags: [excalidraw]
 - 图表的设计选择说明（选择了什么类型的图表、为什么）
 - 是否需要调整或修改
 
-### Example Output Message
+### Example Output Messages
+
+**Obsidian 模式：**
 ```
-Excalidraw 图已自动生成！
+Excalidraw 图已生成！
 
-保存位置：
-Axton_2026商业模式.relationship.md
-
-图表选择说明：
-我选择了「关系图」来表现三大产品线之间的转化关系，用箭头展示用户的升级路径，以及它们如何共同构成完整的商业闭环。
+保存位置：商业模式.relationship.md
 
 使用方法：
 1. 在 Obsidian 中打开此文件
-2. 点击右上角「MORE OPTIONS」菜单
-3. 选择「Switch to EXCALIDRAW VIEW」
-4. 即可看到可视化的商业模式全景
+2. 点击右上角 MORE OPTIONS 菜单
+3. 选择 Switch to EXCALIDRAW VIEW
+```
 
-需要调整吗？比如改变布局、添加更多细节或调整配色，直接告诉我！
+**Standard 模式：**
+```
+Excalidraw 图已生成！
+
+保存位置：商业模式.relationship.excalidraw
+
+使用方法：
+1. 打开 https://excalidraw.com
+2. 点击左上角菜单 → Open → 选择此文件
+3. 或直接拖拽文件到 excalidraw.com 页面
+```
+
+**Animated 模式：**
+```
+Excalidraw 动画图已生成！
+
+保存位置：商业模式.relationship.animate.excalidraw
+
+动画顺序：标题(1) → 主框架(2-4) → 连接线(5-7) → 说明文字(8-10)
+
+生成动画：
+1. 打开 https://dai-shi.github.io/excalidraw-animate/
+2. 点击 Load File 选择此文件
+3. 预览动画效果
+4. 点击 Export 导出 SVG 或 WebM
 ```
