@@ -187,7 +187,7 @@ tags: [excalidraw]
 
 ## Element Template
 
-Each element requires these fields:
+Each element requires these fields (do NOT add extra fields like `frameId`, `index`, `versionNonce`, `strokeStyle`, `rawText` -- they cause "invalid file" errors on excalidraw.com v0.17.0+):
 
 ```json
 {
@@ -200,19 +200,15 @@ Each element requires these fields:
   "backgroundColor": "transparent",
   "fillStyle": "solid",
   "strokeWidth": 2,
-  "strokeStyle": "solid",
   "roughness": 1,
   "opacity": 100,
   "groupIds": [],
-  "frameId": null,
-  "index": "a1",
   "roundness": {"type": 3},
   "seed": 123456789,
   "version": 1,
-  "versionNonce": 987654321,
   "isDeleted": false,
-  "boundElements": [],
-  "updated": 1751928342106,
+  "boundElements": null,
+  "updated": 1,
   "link": null,
   "locked": false
 }
@@ -222,7 +218,6 @@ Text elements add:
 ```json
 {
   "text": "显示文本",
-  "rawText": "显示文本",
   "fontSize": 20,
   "fontFamily": 5,
   "textAlign": "center",
@@ -264,9 +259,11 @@ See [references/excalidraw-schema.md](references/excalidraw-schema.md) for all e
 - **坐标系统**：左上角为原点 (0,0)
 - **推荐范围**：所有元素在 0-1200 x 0-800 像素范围内
 - **元素 ID**：每个元素需要唯一的 `id`（可以是字符串，如「title」「box1」等）
-- **Index 字段**：建议使用字母数字 (a1, a2, a3...)
 
 ### Required Fields for All Elements
+
+**IMPORTANT**: Do NOT include `frameId`, `index`, `versionNonce`, `strokeStyle`, or `rawText` fields. These cause "Error: invalid file" on excalidraw.com v0.17.0+. Use `boundElements: null` (not `[]`), and `updated: 1` (not timestamps).
+
 ```json
 {
   "id": "unique-identifier",
@@ -278,30 +275,25 @@ See [references/excalidraw-schema.md](references/excalidraw-schema.md) for all e
   "backgroundColor": "transparent|#color-hex",
   "fillStyle": "solid",
   "strokeWidth": 2,
-  "strokeStyle": "solid|dashed",
   "roughness": 1,
   "opacity": 100,
   "groupIds": [],
-  "frameId": null,
-  "index": "a1",
   "roundness": {"type": 3},
   "seed": 123456789,
   "version": 1,
-  "versionNonce": 987654321,
   "isDeleted": false,
-  "boundElements": [],
-  "updated": 1751928342106,
+  "boundElements": null,
+  "updated": 1,
   "link": null,
   "locked": false
 }
 ```
 
 ### Text-Specific Properties
-文本元素 (type: "text") 需要额外属性：
+文本元素 (type: "text") 需要额外属性（do NOT include `rawText`）：
 ```json
 {
   "text": "显示文本",
-  "rawText": "显示文本",
   "fontSize": 20,
   "fontFamily": 5,
   "textAlign": "center",
